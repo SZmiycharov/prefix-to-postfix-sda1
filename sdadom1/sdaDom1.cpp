@@ -142,52 +142,36 @@ int main(int argc, char* argv[])
 
 	split(prefixExpression, ' ', prefixExpressionInputStack);
 
-	string t1, t2;
+	string postfixExprElement1, postfixExprElement2;
+	string currentResultStackElement1, currentResultStackElement2;
 
-	int lengthprefixExpressionInputStack = prefixExpressionInputStack.GetLength();
-	
+	int lengthPrefixExpressionInputStack = prefixExpressionInputStack.GetLength();
 	DynamicStack<string> postfixExpression;
-	string currentElement;
 	DynamicStack<string> currentResultStack;
-	double currentResult = -999999999;
-	double helper;
-	string h1, h2;
-	cout << "helper: ";
-	for (int i = 0; i < lengthprefixExpressionInputStack; i++)
+	double currentResult;
+	
+
+	for (int i = 0; i < lengthPrefixExpressionInputStack; i++)
 	{
 		if (isOperator(prefixExpressionInputStack.Peek(), currentIndex, signs))
 		{
-			t1 = postfixExpression.Peek();      
+			postfixExprElement1 = postfixExpression.Peek();      
 			postfixExpression.Pop();
-			t2 = postfixExpression.Peek();
+			postfixExprElement2 = postfixExpression.Peek();
 			postfixExpression.Pop();
 
-			h1 = currentResultStack.Peek();
+			currentResultStackElement1 = currentResultStack.Peek();
 			currentResultStack.Pop();
-			h2 = currentResultStack.Peek();
+			currentResultStackElement2 = currentResultStack.Peek();
 			currentResultStack.Pop();
 
-			assert(istringstream(doOperation(h2, h1, prefixExpressionInputStack.Peek(),
-				currentIndex, signs, operatorSigns)) >> helper);
-			cout << helper << " ";
-			currentResultStack.Push(std::to_string(helper));
-
-			/*if (currentResult == -999999999)
-			{
-				assert(istringstream(doOperation(t1, t2, prefixExpressionInputStack.Peek(),
-					currentIndex, signs, operatorSigns)) >> currentResult);
-				cout << currentResult << " ";
-			}
-			else
-			{
-				assert(istringstream(doOperation(t2, std::to_string(currentResult), prefixExpressionInputStack.Peek(),
-					currentIndex, signs, operatorSigns)) >> currentResult);
-				cout << currentResult << " ";
-			}*/
+			assert(istringstream(doOperation(currentResultStackElement2, currentResultStackElement1, prefixExpressionInputStack.Peek(),
+				currentIndex, signs, operatorSigns)) >> currentResult);
+			currentResultStack.Push(std::to_string(currentResult));
 			
-			t2 += " " + prefixExpressionInputStack.Peek();
+			postfixExprElement2 += " " + prefixExpressionInputStack.Peek();
 			prefixExpressionInputStack.Pop();
-			postfixExpression.Push(t1 + " " + t2);
+			postfixExpression.Push(postfixExprElement1 + " " + postfixExprElement2);
 		}
 		else
 		{
@@ -197,57 +181,12 @@ int main(int argc, char* argv[])
 			prefixExpressionInputStack.Pop();
 		}
 	}
-	cout << endl;
-	
-	DynamicStack<string> prefixExpressionStack;
-	split(postfixExpression.Peek(), ' ', prefixExpressionInputStack);
 
-	int prefixExpressionInputStackLength = prefixExpressionInputStack.GetLength();
-	DynamicStack<string> finalStack;
-	for (int i = 0; i < prefixExpressionInputStackLength; i++)
-	{
-		finalStack.Push(prefixExpressionInputStack.Peek());
-		prefixExpressionInputStack.Pop();
-	}
-	
-	int finstacklength = finalStack.GetLength();
-	DynamicStack<string> result;
-
-	for (int i = 0; i < finstacklength; i++)
-	{
-		if (isOperator(finalStack.Peek(), currentIndex, signs))
-		{
-			string num1 = result.Peek();
-			result.Pop();
-			string num2 = result.Peek();
-			result.Pop();
-			string operation = finalStack.Peek();
-			finalStack.Pop();
-			result.Push(doOperation(num1, num2, operation, currentIndex, signs, operatorSigns));
-		}
-		else
-		{
-			result.Push(finalStack.Peek());
-			finalStack.Pop();
-		}
-	}
-
-	assert(result.GetLength() == 1);
 	assert(postfixExpression.GetLength() == 1);
 
 	cout << postfixExpression.Peek() << endl;
+	cout << currentResult << endl;
 	
-	double finalResult;
-	assert(istringstream(result.Peek()) >> finalResult);
-	
-	//round up double to 5 decimal places
-	finalResult = round(finalResult * 100000.0) / 100000.0;
-
-	cout << finalResult << endl;
-
-	postfixExpression.Pop();
-	result.Pop();
-
 	system("pause");
 }
 
