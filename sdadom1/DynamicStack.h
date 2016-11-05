@@ -19,9 +19,9 @@ template <typename T>
 class DynamicStack {
 	class Container {
 	public:
-		T Data;
+		T Value;
 		Container* pNext;
-		Container(T Data, Container* pNext = NULL);
+		Container(T Value, Container* pNext = NULL);
 	};
 
 public:
@@ -30,15 +30,14 @@ public:
 	DynamicStack(DynamicStack const & obj);
 	DynamicStack& operator=(DynamicStack const & obj);
 
-	T& Peek();
+	T& Top();
 	void Push(const T & Element);
 	bool Pop();
-	void RemoveAll();
 	int GetLength();
 
 private:
 	void Init();
-	void Destroy();
+	void RemoveAll();
 	void CopyFrom(DynamicStack const &obj);
 
 	Container* pTop;
@@ -46,9 +45,9 @@ private:
 };
 
 template <typename T>
-DynamicStack<T>::Container::Container(T Data, Container* pNext)
+DynamicStack<T>::Container::Container(T Value, Container* pNext)
 {
-	this->Data = Data;
+	this->Value = Value;
 	this->pNext = pNext;
 }
 
@@ -68,7 +67,7 @@ DynamicStack<T>::DynamicStack(DynamicStack const & obj)
 template <typename T>
 DynamicStack<T>::~DynamicStack()
 {
-	Destroy();
+	RemoveAll();
 }
 
 template <typename T>
@@ -76,7 +75,7 @@ DynamicStack<T>& DynamicStack<T>::operator=(DynamicStack<T> const & obj)
 {
 	if (this != &obj)
 	{
-		Destroy();
+		RemoveAll();
 		CopyFrom(obj);
 	}
 
@@ -91,7 +90,7 @@ void DynamicStack<T>::Init()
 }
 
 template <typename T>
-void DynamicStack<T>::Destroy()
+void DynamicStack<T>::RemoveAll()
 {
 	Container* p;
 
@@ -117,14 +116,14 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 
 	try
 	{
-		pTop = new Container(obj.pTop->Data);
+		pTop = new Container(obj.pTop->Value);
 
 		ours = pTop;
 		theirs = obj.pTop->pNext;
 
 		while (theirs)
 		{
-			ours->pNext = new Container(theirs->Data);
+			ours->pNext = new Container(theirs->Value);
 			ours = ours->pNext;
 			theirs = theirs->pNext;
 		}
@@ -133,18 +132,18 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 	}
 	catch (const std::bad_alloc&)
 	{
-		Destroy();	
+		RemoveAll();	
 		fprintf(stderr, "Exception thrown on failure allocating memory\n");
 		return -1;
 	}
 }
 
 template<typename T>
-T& DynamicStack<T>::Peek()
+T& DynamicStack<T>::Top()
 {
 	assert(Used != 0);
 
-	return pTop->Data;
+	return pTop->Value;
 }
 
 template <typename T>
@@ -170,12 +169,6 @@ bool DynamicStack<T>::Pop()
 	Used--;
 
 	return true;
-}
-
-template <typename T>
-void DynamicStack<T>::RemoveAll()
-{
-	Destroy();
 }
 
 template <typename T>

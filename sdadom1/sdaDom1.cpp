@@ -25,19 +25,7 @@
 
 using namespace std;
 
-double cint(double x){
-	if (modf(x, 0) >= .5)
-		return x >= 0 ? ceil(x) : floor(x);
-	else
-		return x<0 ? ceil(x) : floor(x);
-}
-
-double round(double r, unsigned places){
-	double off = pow(10, places);
-	return cint(r*off) / off;
-}
-
-void split(const std::string &s, char delim, DynamicStack<string> &elems) {
+void splitStringToStack(const std::string &s, char delim, DynamicStack<string> &elems) {
 	std::stringstream ss;
 	ss.str(s);
 	std::string item;
@@ -71,7 +59,7 @@ string doOperation(string firstOperand, string secondOperand, string operationCh
 		}
 	}
 
-	double firstNum = 0;
+	double firstNum;
 	assert(istringstream(firstOperand) >> firstNum);
 
 	double secondNum;
@@ -92,23 +80,22 @@ string doOperation(string firstOperand, string secondOperand, string operationCh
 
 int main(int argc, char* argv[])
 {
-	DynamicStack<string> prefixExpressionInputStack;
 	if (argc != 3)
 	{
 		std::cerr << "Usage: " << argv[0] << " <FILENAME> <FILENAME>" << std::endl;
 		return 1;
 	}
 
+	DynamicStack<string> prefixExpressionInputStack;
 	std::ifstream fileSigns(argv[1]);
 	std::ifstream fileExpression(argv[2]);
 
 	char operatorSign, sign;
+	char signs[10000], operatorSigns[10000];
+	double associativities[10000];
 	float associativity;
 	int currentIndex = 0;
-	char signs[100];
-	char operatorSigns[100];
-	double associativities[100];
-
+	
 	if (fileSigns.is_open())
 	{
 		while (fileSigns >> sign >> operatorSign >> associativity)
@@ -140,51 +127,50 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	split(prefixExpression, ' ', prefixExpressionInputStack);
+	splitStringToStack(prefixExpression, ' ', prefixExpressionInputStack);
 
 	string postfixExprElement1, postfixExprElement2;
 	string currentResultStackElement1, currentResultStackElement2;
-
 	int lengthPrefixExpressionInputStack = prefixExpressionInputStack.GetLength();
+	double currentResult;
 	DynamicStack<string> postfixExpression;
 	DynamicStack<string> currentResultStack;
-	double currentResult;
 	
-
+	
 	for (int i = 0; i < lengthPrefixExpressionInputStack; i++)
 	{
-		if (isOperator(prefixExpressionInputStack.Peek(), currentIndex, signs))
+		if (isOperator(prefixExpressionInputStack.Top(), currentIndex, signs))
 		{
-			postfixExprElement1 = postfixExpression.Peek();      
+			postfixExprElement1 = postfixExpression.Top();      
 			postfixExpression.Pop();
-			postfixExprElement2 = postfixExpression.Peek();
+			postfixExprElement2 = postfixExpression.Top();
 			postfixExpression.Pop();
 
-			currentResultStackElement1 = currentResultStack.Peek();
+			currentResultStackElement1 = currentResultStack.Top();
 			currentResultStack.Pop();
-			currentResultStackElement2 = currentResultStack.Peek();
+			currentResultStackElement2 = currentResultStack.Top();
 			currentResultStack.Pop();
 
-			assert(istringstream(doOperation(currentResultStackElement2, currentResultStackElement1, prefixExpressionInputStack.Peek(),
+			assert(istringstream(doOperation(currentResultStackElement2, currentResultStackElement1, prefixExpressionInputStack.Top(),
 				currentIndex, signs, operatorSigns)) >> currentResult);
 			currentResultStack.Push(std::to_string(currentResult));
 			
-			postfixExprElement2 += " " + prefixExpressionInputStack.Peek();
+			postfixExprElement2 += " " + prefixExpressionInputStack.Top();
 			prefixExpressionInputStack.Pop();
 			postfixExpression.Push(postfixExprElement1 + " " + postfixExprElement2);
 		}
 		else
 		{
-			currentResultStack.Push(prefixExpressionInputStack.Peek());
+			currentResultStack.Push(prefixExpressionInputStack.Top());
 
-			postfixExpression.Push(prefixExpressionInputStack.Peek());
+			postfixExpression.Push(prefixExpressionInputStack.Top());
 			prefixExpressionInputStack.Pop();
 		}
 	}
 
 	assert(postfixExpression.GetLength() == 1);
 
-	cout << postfixExpression.Peek() << endl;
+	cout << postfixExpression.Top() << endl;
 	cout << currentResult << endl;
 	
 	system("pause");
