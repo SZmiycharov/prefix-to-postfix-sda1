@@ -18,49 +18,108 @@
 #include <map>
 #include "DynamicStack.h"
 #include <string>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+#include <assert.h>
 
 using namespace std;
 
-bool isOperator(char c)
+double cint(double x){
+	if (modf(x, 0) >= .5)
+		return x >= 0 ? ceil(x) : floor(x);
+	else
+		return x<0 ? ceil(x) : floor(x);
+}
+
+double round(double r, unsigned places){
+	double off = pow(10, places);
+	return cint(r*off) / off;
+}
+
+void split(const std::string &s, char delim, DynamicStack<string> &elems) {
+	std::stringstream ss;
+	ss.str(s);
+	std::string item;
+	while (std::getline(ss, item, delim)) {
+		elems.Push(item);
+	}
+}
+
+bool isOperator(string c, int length, char signs[100])
 {
-	if (c == '+' || c == '-' || c == '*' || c == '/')
-		return true;
+	for (int i = 0; i < length; i++)
+	{
+		if (signs[i] == c[0])
+		{
+			return true;
+		}
+	}
+
 	return false;
+}
+
+string doOperation(string firstOperand, string secondOperand, string operationChar, int length, char signs[100], char operatorSigns[100])
+{
+	char operation;
+	for (int i = 0; i < length; i++)
+	{
+		if (signs[i] == operationChar[0])
+		{
+			operation = operatorSigns[i];
+			break;
+		}
+	}
+
+	double firstNum = 0;
+	assert(istringstream(firstOperand) >> firstNum);
+
+	double secondNum;
+	assert(istringstream(secondOperand) >> secondNum);
+
+	switch (operation)
+	{
+		case '*':
+			return std::to_string(secondNum * firstNum); break;
+		case '/':
+			return std::to_string(secondNum / firstNum); break;
+		case '+':
+			return std::to_string(secondNum + firstNum); break;
+		case '-':
+			return std::to_string(secondNum - firstNum); break;
+	}
 }
 
 int main(int argc, char* argv[])
 {
-	if (argc < 3)
+	DynamicStack<string> postfixExpressionStack;
+	if (argc != 3)
 	{
-		std::cerr << "Usage: " << argv[0] << " <FILENAME> <EXPRESSION>" << std::endl;
+		std::cerr << "Usage: " << argv[0] << " <FILENAME> <FILENAME>" << std::endl;
 		return 1;
-
 	}
 
-	std::ifstream myfile(argv[1]);
+	std::ifstream fileSigns(argv[1]);
+	std::ifstream fileExpression(argv[2]);
 
-	char associativity, sign;
-	float number;
+	char operatorSign, sign;
+	float associativity;
 	int currentIndex = 0;
 	char signs[100];
-	char associativities[100];
-	float numbers[100];
+	char operatorSigns[100];
+	double associativities[100];
 
-	if (myfile.is_open())
+	if (fileSigns.is_open())
 	{
-		while (myfile >> sign >> associativity >> number)
+		while (fileSigns >> sign >> operatorSign >> associativity)
 		{
-			cout << "sign: " << sign << ";";
-			cout << " associativity: " << associativity;
-			cout << " number: " << number << ";" << "\n";
-
 			signs[currentIndex] = sign;
+			operatorSigns[currentIndex] = operatorSign;
 			associativities[currentIndex] = associativity;
-			numbers[currentIndex] = number;
 			++currentIndex;
 		}
 
-		myfile.close();
+		fileSigns.close();
 	}
 	else
 	{
@@ -68,51 +127,97 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	//for (int i = 0; i < currentIndex; ++i)
-	//{
-	//	cout << signs[i] << " ";
-	//	cout << associativities[i] << " ";
-	//	cout << numbers[i] << endl;
-	//}
+	string prefixExpression;
 
-	/*cout << endl;
-
-	for (int i = 2; i < argc; i++)
+	if (fileExpression.is_open())
 	{
-		cout << argv[i] << " ";
+		getline(fileExpression, prefixExpression);
+		fileExpression.close();
 	}
-	cout << endl;*/
+	else
+	{
+		cout << "Unable to open file " << argv[2] << endl;
+		return 1;
+	}
 
+	split(prefixExpression, ' ', postfixExpressionStack);
 
-	/*string prefix;
-	cin >> prefix;
-
-	DynamicStack<string> st;
 	string t1, t2;
 
-	int l = prefix.length();
-	for (int i = l - 1; i >= 0; i--)
+	int lengthpostfixExpressionStack = postfixExpressionStack.GetLength();
+	
+	DynamicStack<string> postfixExpression;
+	string currentElement;
+
+	for (int i = 0; i < lengthpostfixExpressionStack; i++)
 	{
-		if (isOperator(prefix[i]))
+		if (isOperator(postfixExpressionStack.Peek(), currentIndex, signs))
 		{
-			t1 = st.Peek();      
-			st.Pop();
-			t2 = st.Peek();      
-			st.Pop();
-			t2 += prefix[i];
-			st.Push(t1 + t2);
+			t1 = postfixExpression.Peek();      
+			postfixExpression.Pop();
+			t2 = postfixExpression.Peek();
+			postfixExpression.Pop();
+			t2 += " " + postfixExpressionStack.Peek();
+			postfixExpressionStack.Pop();
+			postfixExpression.Push(t1 + " " + t2);
 		}
 		else
 		{
-			t1 = "";
-			t1 += prefix[i];
-			st.Push(t1);
+			t1 = postfixExpressionStack.Peek();
+			postfixExpressionStack.Pop();
+
+			postfixExpression.Push(t1);
+		}
+	}
+	
+	DynamicStack<string> prefixExpressionStack;
+	split(postfixExpression.Peek(), ' ', postfixExpressionStack);
+
+	int postfixExpressionStackLength = postfixExpressionStack.GetLength();
+	DynamicStack<string> finalStack;
+	for (int i = 0; i < postfixExpressionStackLength; i++)
+	{
+		finalStack.Push(postfixExpressionStack.Peek());
+		postfixExpressionStack.Pop();
+	}
+	
+	int finstacklength = finalStack.GetLength();
+	DynamicStack<string> result;
+
+	for (int i = 0; i < finstacklength; i++)
+	{
+		if (isOperator(finalStack.Peek(), currentIndex, signs))
+		{
+			string num1 = result.Peek();
+			result.Pop();
+			string num2 = result.Peek();
+			result.Pop();
+			string operation = finalStack.Peek();
+			finalStack.Pop();
+			result.Push(doOperation(num1, num2, operation, currentIndex, signs, operatorSigns));
+		}
+		else
+		{
+			result.Push(finalStack.Peek());
+			finalStack.Pop();
 		}
 	}
 
-	string postfix = st.Peek();      
-	st.Pop();
-	cout << postfix << endl;*/
+	assert(result.GetLength() == 1);
+	assert(postfixExpression.GetLength() == 1);
+
+	cout << postfixExpression.Peek() << endl;
+	
+	double finalResult;
+	assert(istringstream(result.Peek()) >> finalResult);
+	
+	//round up double to 5 decimal places
+	finalResult = round(finalResult * 100000.0) / 100000.0;
+
+	cout << finalResult << endl;
+
+	postfixExpression.Pop();
+	result.Pop();
 
 	system("pause");
 }
