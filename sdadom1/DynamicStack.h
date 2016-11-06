@@ -18,10 +18,10 @@
 template <typename T>
 class DynamicStack {
 	class Container {
-	public:
-		T Value;
-		Container* pNext;
-		Container(T Value, Container* pNext = NULL);
+		public:
+			T Value;
+			Container* pNext;
+			Container(T Value, Container* pNext = NULL);
 	};
 
 public:
@@ -36,7 +36,6 @@ public:
 	int GetLength();
 
 private:
-	void Init();
 	void RemoveAll();
 	void CopyFrom(DynamicStack const &obj);
 
@@ -54,20 +53,22 @@ DynamicStack<T>::Container::Container(T Value, Container* pNext)
 template <typename T>
 DynamicStack<T>::DynamicStack()
 {
-	Init();
-}
-
-template <typename T>
-DynamicStack<T>::DynamicStack(DynamicStack const & obj)
-{
-	Init();
-	CopyFrom(obj);
+	pTop = 0;
+	Used = 0;
 }
 
 template <typename T>
 DynamicStack<T>::~DynamicStack()
 {
 	RemoveAll();
+}
+
+template <typename T>
+DynamicStack<T>::DynamicStack(DynamicStack const & obj)
+{
+	pTop = 0;
+	Used = 0;
+	CopyFrom(obj);
 }
 
 template <typename T>
@@ -83,13 +84,6 @@ DynamicStack<T>& DynamicStack<T>::operator=(DynamicStack<T> const & obj)
 }
 
 template <typename T>
-void DynamicStack<T>::Init()
-{
-	pTop = 0;
-	Used = 0;
-}
-
-template <typename T>
 void DynamicStack<T>::RemoveAll()
 {
 	Container* p;
@@ -101,7 +95,8 @@ void DynamicStack<T>::RemoveAll()
 		delete p;
 	}
 
-	Init();
+	pTop = 0;
+	Used = 0;
 }
 
 template <typename T>
@@ -141,7 +136,7 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 template<typename T>
 T& DynamicStack<T>::Top()
 {
-	assert(Used != 0);
+	assert(Used > 0);
 
 	return pTop->Value;
 }

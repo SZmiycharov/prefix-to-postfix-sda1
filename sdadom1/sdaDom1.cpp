@@ -12,47 +12,30 @@
 *
 */
 
-#include "stdafx.h"
+
 #include <iostream>
 #include <fstream>
-#include <map>
-#include "DynamicStack.h"
 #include <string>
 #include <sstream>
-#include <algorithm>
 #include <iterator>
 #include <assert.h>
+#include "DynamicStack.h"
 
 using namespace std;
 
-void splitCharArrToStack(const char* str, char delim, DynamicStack<char*> &elems) {
-	char buffer[10000];
-	buffer[0] = 0;
-	char test[10000];
-	int index = 0;
-	
-	for (int i = 0; i < strlen(str); i++)
-	{
-		if (str[i] == delim && buffer[0] != 0)
-		{
-			for (int j = 0; j < strlen(buffer); j++)
-			{
+#define assert__(x) for ( ; !(x) ; assert(x) )
 
-			}
-			elems.Push(buffer);
-			memset(buffer, 0, 10000);
-			buffer[0] = 0;
-			index = 0;
-		}
-		else
-		{
-			buffer[index] = str[i];
-			++index;
-		}
+void splitStringToStack(const string &s, char delim, DynamicStack<string> &elems) {
+	stringstream ss;
+	ss.str(s);
+	string item;
+
+	while (getline(ss, item, delim)) {
+		elems.Push(item);
 	}
 }
 
-bool isOperator(string c, int length, char signs[100])
+bool isOperator(string c, int length, char signs[10000])
 {
 	for (int i = 0; i < length; i++)
 	{
@@ -65,7 +48,7 @@ bool isOperator(string c, int length, char signs[100])
 	return false;
 }
 
-string doOperation(string firstOperand, string secondOperand, string operationChar, int length, char signs[100], char operatorSigns[100])
+string doOperation(string firstOperand, string secondOperand, string operationChar, int length, char signs[10000], char operatorSigns[10000])
 {
 	char operation;
 	for (int i = 0; i < length; i++)
@@ -86,13 +69,16 @@ string doOperation(string firstOperand, string secondOperand, string operationCh
 	switch (operation)
 	{
 		case '*':
-			return std::to_string(secondNum * firstNum); break;
+			return to_string(secondNum * firstNum); break;
 		case '/':
-			return std::to_string(secondNum / firstNum); break;
+			return to_string(secondNum / firstNum); break;
 		case '+':
-			return std::to_string(secondNum + firstNum); break;
+			return to_string(secondNum + firstNum); break;
 		case '-':
-			return std::to_string(secondNum - firstNum); break;
+			return to_string(secondNum - firstNum); break;
+		default:
+			cout << "Illegal operation description for '" << operationChar[0] << "' !\n";
+			return 0;
 	}
 }
 
@@ -100,13 +86,14 @@ int main(int argc, char* argv[])
 {
 	if (argc != 3)
 	{
-		std::cerr << "Usage: " << argv[0] << " <FILENAME> <FILENAME>" << std::endl;
+		cerr << "Usage: " << argv[0] << " <FILENAME> <FILENAME>" << endl;
 		return 1;
 	}
 
-	DynamicStack<char*> prefixExpressionInputStack;
-	std::ifstream fileSigns(argv[1]);
-	
+	DynamicStack<string> prefixExpressionInputStack;
+	ifstream fileSigns(argv[1]);
+	ifstream fileExpression(argv[2]);
+
 	char operatorSign, sign;
 	char signs[10000], operatorSigns[10000];
 	double associativities[10000];
@@ -131,18 +118,11 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	char prefixExpression[10000];
-	int index = 0;
-	char ch;
-	fstream fileExpression(argv[2], fstream::in);
+	string prefixExpression;
 
 	if (fileExpression.is_open())
 	{
-		while (fileExpression >> noskipws >> ch) 
-		{
-			prefixExpression[index] = ch;
-			++index;
-		}
+		getline(fileExpression, prefixExpression);
 		fileExpression.close();
 	}
 	else
@@ -151,19 +131,8 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	
-	splitCharArrToStack(prefixExpression, ' ', prefixExpressionInputStack);
+	splitStringToStack(prefixExpression, ' ', prefixExpressionInputStack);
 
-	int length = prefixExpressionInputStack.GetLength();
-	cout << endl;
-	for (int i = 0; i < length; i++)
-	{
-		cout << prefixExpressionInputStack.Top() << " ";
-		prefixExpressionInputStack.Pop();
-	}
-	cout << endl;
-
-	/*
 	string postfixExprElement1, postfixExprElement2;
 	string currentResultStackElement1, currentResultStackElement2;
 	int lengthPrefixExpressionInputStack = prefixExpressionInputStack.GetLength();
@@ -173,8 +142,20 @@ int main(int argc, char* argv[])
 	
 	for (int i = 0; i < lengthPrefixExpressionInputStack; i++)
 	{
+		if (prefixExpressionInputStack.GetLength() <= 0)
+		{
+			cout << "Error\n";
+			return -1;
+		}
+
 		if (isOperator(prefixExpressionInputStack.Top(), currentIndex, signs))
 		{
+			if (postfixExpression.GetLength() <= 1)
+			{
+				cout << "Error\n";
+				return -1;
+			}
+
 			postfixExprElement1 = postfixExpression.Top();      
 			postfixExpression.Pop();
 			postfixExprElement2 = postfixExpression.Top();
@@ -187,7 +168,7 @@ int main(int argc, char* argv[])
 
 			assert(istringstream(doOperation(currentResultStackElement2, currentResultStackElement1, prefixExpressionInputStack.Top(),
 				currentIndex, signs, operatorSigns)) >> currentResult);
-			currentResultStack.Push(std::to_string(currentResult));
+			currentResultStack.Push(to_string(currentResult));
 			
 			postfixExprElement2 += " " + prefixExpressionInputStack.Top();
 			prefixExpressionInputStack.Pop();
@@ -202,10 +183,14 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	assert(postfixExpression.GetLength() == 1);
+	if (postfixExpression.GetLength() != 1)
+	{
+		cout << "Error\n";
+		return -1;
+	}
 
 	cout << postfixExpression.Top() << endl;
-	cout << currentResult << endl;*/
+	cout << currentResult << endl;
 	
 	system("pause");
 }
