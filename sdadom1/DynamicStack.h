@@ -32,7 +32,7 @@ public:
 
 	T& Top();
 	void Push(const T & Element);
-	bool Pop();
+	void Pop();
 	int GetLength();
 
 private:
@@ -83,6 +83,40 @@ DynamicStack<T>& DynamicStack<T>::operator=(DynamicStack<T> const & obj)
 	return *this;
 }
 
+template<typename T>
+T& DynamicStack<T>::Top()
+{
+	assert(Used > 0);
+
+	return pTop->Value;
+}
+
+template <typename T>
+void DynamicStack<T>::Push(const T & Element)
+{
+	pTop = new Container(Element, pTop);
+
+	++Used;
+}
+
+template<typename T>
+void DynamicStack<T>::Pop()
+{
+	assert(Used > 0);
+
+	Container* pOld = pTop;
+	pTop = pTop->pNext;
+	delete pOld;
+
+	--Used;
+}
+
+template <typename T>
+int DynamicStack<T>::GetLength()
+{
+	return Used;
+}
+
 template <typename T>
 void DynamicStack<T>::RemoveAll()
 {
@@ -107,20 +141,15 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 		return;
 	}
 		
-	Container<T> *ours, *theirs;
-
 	try
 	{
 		pTop = new Container(obj.pTop->Value);
 
-		ours = pTop;
-		theirs = obj.pTop->pNext;
-
-		while (theirs)
+		while (obj.pTop->pNext)
 		{
-			ours->pNext = new Container(theirs->Value);
-			ours = ours->pNext;
-			theirs = theirs->pNext;
+			pTop->pNext = new Container(obj.pTop->pNext->Value);
+			pTop = pTop->pNext;
+			obj.pTop->pNext = obj.pTop->pNext->pNext;
 		}
 
 		Used = obj.Used;
@@ -129,45 +158,6 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 	{
 		RemoveAll();	
 		fprintf(stderr, "Exception thrown on failure allocating memory\n");
-		return -1;
+		throw;
 	}
-}
-
-template<typename T>
-T& DynamicStack<T>::Top()
-{
-	assert(Used > 0);
-
-	return pTop->Value;
-}
-
-template <typename T>
-void DynamicStack<T>::Push(const T & Element)
-{
-	pTop = new Container(Element, pTop);
-
-	Used++;
-}
-
-template<typename T>
-bool DynamicStack<T>::Pop()
-{
-	if (Used == 0)
-	{
-		return false;
-	}
-		
-	Container* pOld = pTop;
-	pTop = pTop->pNext;
-	delete pOld;
-
-	Used--;
-
-	return true;
-}
-
-template <typename T>
-int DynamicStack<T>::GetLength()
-{
-	return Used;
 }

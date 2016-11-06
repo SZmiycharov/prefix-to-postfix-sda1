@@ -1,14 +1,32 @@
-﻿Build started 6.11.2016 г. 22:42:51.
+﻿Build started 7.11.2016 г. 0:27:59.
      1>Project "C:\Users\stanislav\Documents\Visual Studio 2013\Projects\prefix-to-postfix-sda1\sdadom1\sdaDom1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt sdaDom1.cpp
          sdaDom1.cpp
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\stanislav\Documents\Visual Studio 2013\Projects\prefix-to-postfix-sda1\Debug\sdaDom1.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\stanislav\Documents\Visual Studio 2013\Projects\prefix-to-postfix-sda1\Debug\sdaDom1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\stanislav\Documents\Visual Studio 2013\Projects\prefix-to-postfix-sda1\Debug\sdaDom1.lib" /MACHINE:X86 Debug\sdaDom1.obj
-         Debug\stdafx.obj
-         sdaDom1.vcxproj -> C:\Users\stanislav\Documents\Visual Studio 2013\Projects\prefix-to-postfix-sda1\Debug\sdaDom1.exe
-     1>Done Building Project "C:\Users\stanislav\Documents\Visual Studio 2013\Projects\prefix-to-postfix-sda1\sdadom1\sdaDom1.vcxproj" (Build target(s)).
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(190): error C2143: syntax error : missing ';' before '<'
+                 c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(186) : while compiling class template member function 'void LinkedStack<int>::CopyFrom(const LinkedStack<int> &)'
+                 c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(96) : see reference to function template instantiation 'void LinkedStack<int>::CopyFrom(const LinkedStack<int> &)' being compiled
+                 c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(94) : while compiling class template member function 'LinkedStack<int>::LinkedStack(const LinkedStack<int> &)'
+                 c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\sdadom1.cpp(92) : see reference to function template instantiation 'LinkedStack<int>::LinkedStack(const LinkedStack<int> &)' being compiled
+                 c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\sdadom1.cpp(88) : see reference to class template instantiation 'LinkedStack<int>' being compiled
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(198): error C2065: 'ours' : undeclared identifier
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(199): error C2065: 'theirs' : undeclared identifier
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(201): error C2065: 'theirs' : undeclared identifier
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(203): error C2065: 'ours' : undeclared identifier
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(203): error C2227: left of '->pNext' must point to class/struct/union/generic type
+                 type is 'unknown-type'
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(203): error C2065: 'theirs' : undeclared identifier
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(203): error C2227: left of '->Data' must point to class/struct/union/generic type
+                 type is 'unknown-type'
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(203): error C2512: 'LinkedStack<int>::Box' : no appropriate default constructor available
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(204): error C2065: 'ours' : undeclared identifier
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(204): error C2227: left of '->pNext' must point to class/struct/union/generic type
+                 type is 'unknown-type'
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(205): error C2065: 'theirs' : undeclared identifier
+     1>c:\users\stanislav\documents\visual studio 2013\projects\prefix-to-postfix-sda1\sdadom1\test.h(205): error C2227: left of '->pNext' must point to class/struct/union/generic type
+                 type is 'unknown-type'
+     1>Done Building Project "C:\Users\stanislav\Documents\Visual Studio 2013\Projects\prefix-to-postfix-sda1\sdadom1\sdaDom1.vcxproj" (Build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:00.74
+Time Elapsed 00:00:00.54
