@@ -25,12 +25,30 @@
 
 using namespace std;
 
-void splitStringToStack(const std::string &s, char delim, DynamicStack<string> &elems) {
-	std::stringstream ss;
-	ss.str(s);
-	std::string item;
-	while (std::getline(ss, item, delim)) {
-		elems.Push(item);
+void splitCharArrToStack(const char* str, char delim, DynamicStack<char*> &elems) {
+	char buffer[10000];
+	buffer[0] = 0;
+	char test[10000];
+	int index = 0;
+	
+	for (int i = 0; i < strlen(str); i++)
+	{
+		if (str[i] == delim && buffer[0] != 0)
+		{
+			for (int j = 0; j < strlen(buffer); j++)
+			{
+
+			}
+			elems.Push(buffer);
+			memset(buffer, 0, 10000);
+			buffer[0] = 0;
+			index = 0;
+		}
+		else
+		{
+			buffer[index] = str[i];
+			++index;
+		}
 	}
 }
 
@@ -86,10 +104,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	DynamicStack<string> prefixExpressionInputStack;
+	DynamicStack<char*> prefixExpressionInputStack;
 	std::ifstream fileSigns(argv[1]);
-	std::ifstream fileExpression(argv[2]);
-
+	
 	char operatorSign, sign;
 	char signs[10000], operatorSigns[10000];
 	double associativities[10000];
@@ -114,11 +131,18 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	string prefixExpression;
+	char prefixExpression[10000];
+	int index = 0;
+	char ch;
+	fstream fileExpression(argv[2], fstream::in);
 
 	if (fileExpression.is_open())
 	{
-		getline(fileExpression, prefixExpression);
+		while (fileExpression >> noskipws >> ch) 
+		{
+			prefixExpression[index] = ch;
+			++index;
+		}
 		fileExpression.close();
 	}
 	else
@@ -127,15 +151,25 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	splitStringToStack(prefixExpression, ' ', prefixExpressionInputStack);
+	
+	splitCharArrToStack(prefixExpression, ' ', prefixExpressionInputStack);
 
+	int length = prefixExpressionInputStack.GetLength();
+	cout << endl;
+	for (int i = 0; i < length; i++)
+	{
+		cout << prefixExpressionInputStack.Top() << " ";
+		prefixExpressionInputStack.Pop();
+	}
+	cout << endl;
+
+	/*
 	string postfixExprElement1, postfixExprElement2;
 	string currentResultStackElement1, currentResultStackElement2;
 	int lengthPrefixExpressionInputStack = prefixExpressionInputStack.GetLength();
 	double currentResult;
 	DynamicStack<string> postfixExpression;
 	DynamicStack<string> currentResultStack;
-	
 	
 	for (int i = 0; i < lengthPrefixExpressionInputStack; i++)
 	{
@@ -171,7 +205,7 @@ int main(int argc, char* argv[])
 	assert(postfixExpression.GetLength() == 1);
 
 	cout << postfixExpression.Top() << endl;
-	cout << currentResult << endl;
+	cout << currentResult << endl;*/
 	
 	system("pause");
 }
