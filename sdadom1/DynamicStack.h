@@ -140,16 +140,21 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 	{
 		return;
 	}
-		
+	Container *ours, *theirs;
+
+	
 	try
 	{
 		pTop = new Container(obj.pTop->Value);
 
-		while (obj.pTop->pNext)
+		ours = pTop;
+		theirs = obj.pTop->pNext;
+
+		while (theirs)
 		{
-			pTop->pNext = new Container(obj.pTop->pNext->Value);
-			pTop = pTop->pNext;
-			obj.pTop->pNext = obj.pTop->pNext->pNext;
+			ours->pNext = new Container(theirs->Value);
+			ours = ours->pNext;
+			theirs = theirs->pNext;
 		}
 
 		Used = obj.Used;

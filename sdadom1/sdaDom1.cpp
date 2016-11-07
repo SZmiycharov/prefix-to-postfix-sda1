@@ -84,17 +84,34 @@ string doOperation(string firstOperand, string secondOperand, string operationCh
 
 int main(int argc, char* argv[])
 {
-	DynamicStack<int> first;
-	first.Push(1);
-	first.Push(2);
-	first.Push(3);
-	DynamicStack<int> second = first;
-	for (int i = 0; i < 3; i++)
-	{
-		cout << second.Top();
-		second.Pop();
-	}
-	return 0;
+	//DynamicStack<int> first;
+	//first.Push(1);
+	//first.Push(2);
+	//first.Push(3);
+	//int size1 = first.GetLength();
+	//cout << "FIRST: ";
+	//for (int i = 0; i < size1; i++)
+	//{
+	//	cout << first.Top() << " ";
+	//	first.Pop();
+	//}
+	//cout << endl;
+	//first.Push(1);
+	//first.Push(2);
+	//first.Push(3);
+
+	//DynamicStack<int> second = first;
+	//int size2 = second.GetLength();
+	//cout << "SECOND: ";
+	//for (int i = 0; i < size2; i++)
+	//{
+	//	cout << first.Top() << " ";
+	//	first.Pop();
+	//}
+	//cout << endl;
+	//return 0;
+		
+
 
 	if (argc != 3)
 	{
