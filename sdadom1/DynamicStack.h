@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include <exception>
+#include <stdlib.h>
 
 template <typename T>
 class DynamicStack {
@@ -37,7 +38,7 @@ public:
 
 private:
 	void RemoveAll();
-	void CopyFrom(DynamicStack const &obj);
+	void CopyFrom(DynamicStack const & obj);
 
 	Container* pTop;
 	size_t Used;
@@ -104,9 +105,9 @@ void DynamicStack<T>::Pop()
 {
 	assert(Used > 0);
 
-	Container* pOld = pTop;
+	Container* pOldTop = pTop;
 	pTop = pTop->pNext;
-	delete pOld;
+	delete pOldTop;
 
 	--Used;
 }
@@ -140,29 +141,25 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 	{
 		return;
 	}
-	Container *ours, *theirs;
 
-	
 	try
 	{
-		pTop = new Container(obj.pTop->Value);
+		pTop = new Container(obj.pTop->Value, NULL);
+		Container *outCurrentElement = pTop;
+		Container *theirCurrentElement = obj.pTop->pNext;
 
-		ours = pTop;
-		theirs = obj.pTop->pNext;
-
-		while (theirs)
+		while (theirCurrentElement)
 		{
-			ours->pNext = new Container(theirs->Value);
-			ours = ours->pNext;
-			theirs = theirs->pNext;
+			outCurrentElement->pNext = new Container(theirCurrentElement->Value, NULL);
+			outCurrentElement = outCurrentElement->pNext;
+			theirCurrentElement = theirCurrentElement->pNext;
 		}
-
 		Used = obj.Used;
 	}
 	catch (const std::bad_alloc&)
 	{
 		RemoveAll();	
 		fprintf(stderr, "Exception thrown on failure allocating memory\n");
-		throw;
+		exit(EXIT_FAILURE);
 	}
 }

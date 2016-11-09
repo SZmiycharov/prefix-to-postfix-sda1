@@ -12,18 +12,16 @@
 *
 */
 
-
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <iterator>
 #include <assert.h>
+#include <stdlib.h>
 #include "DynamicStack.h"
 
 using namespace std;
-
-#define assert__(x) for ( ; !(x) ; assert(x) )
 
 void splitStringToStack(const string &s, char delim, DynamicStack<string> &elems) {
 	stringstream ss;
@@ -66,6 +64,12 @@ string doOperation(string firstOperand, string secondOperand, string operationCh
 	double secondNum;
 	assert(istringstream(secondOperand) >> secondNum);
 
+	if (firstNum == 0 && operation == '/')
+	{
+		cout << "Devision by zero not allowed!\n";
+		exit(EXIT_FAILURE);
+	}
+
 	switch (operation)
 	{
 		case '*':
@@ -78,55 +82,27 @@ string doOperation(string firstOperand, string secondOperand, string operationCh
 			return to_string(secondNum - firstNum); break;
 		default:
 			cout << "Illegal operation description for '" << operationChar[0] << "' !\n";
-			return 0;
+			exit(EXIT_FAILURE);
 	}
 }
 
 int main(int argc, char* argv[])
 {
-	//DynamicStack<int> first;
-	//first.Push(1);
-	//first.Push(2);
-	//first.Push(3);
-	//int size1 = first.GetLength();
-	//cout << "FIRST: ";
-	//for (int i = 0; i < size1; i++)
-	//{
-	//	cout << first.Top() << " ";
-	//	first.Pop();
-	//}
-	//cout << endl;
-	//first.Push(1);
-	//first.Push(2);
-	//first.Push(3);
-
-	//DynamicStack<int> second = first;
-	//int size2 = second.GetLength();
-	//cout << "SECOND: ";
-	//for (int i = 0; i < size2; i++)
-	//{
-	//	cout << first.Top() << " ";
-	//	first.Pop();
-	//}
-	//cout << endl;
-	//return 0;
-		
-
-
 	if (argc != 3)
 	{
 		cerr << "Usage: " << argv[0] << " <FILENAME> <FILENAME>" << endl;
-		return 1;
+		system("pause");
+		exit(EXIT_FAILURE);
 	}
 
 	DynamicStack<string> prefixExpressionInputStack;
 	ifstream fileSigns(argv[1]);
 	ifstream fileExpression(argv[2]);
 
-	char operatorSign, sign;
+	char sign, operatorSign;
 	char signs[10000], operatorSigns[10000];
 	double associativities[10000];
-	float associativity;
+	double associativity;
 	int currentIndex = 0;
 	
 	if (fileSigns.is_open())
@@ -144,7 +120,7 @@ int main(int argc, char* argv[])
 	else
 	{
 		cout << "Unable to open file " << argv[1] << endl;
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
 	string prefixExpression;
@@ -157,7 +133,7 @@ int main(int argc, char* argv[])
 	else
 	{
 		cout << "Unable to open file " << argv[2] << endl;
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
 	splitStringToStack(prefixExpression, ' ', prefixExpressionInputStack);
@@ -174,7 +150,7 @@ int main(int argc, char* argv[])
 		if (prefixExpressionInputStack.GetLength() <= 0)
 		{
 			cout << "Error\n";
-			return -1;
+			exit(EXIT_FAILURE);
 		}
 
 		if (isOperator(prefixExpressionInputStack.Top(), currentIndex, signs))
@@ -182,7 +158,7 @@ int main(int argc, char* argv[])
 			if (postfixExpression.GetLength() <= 1)
 			{
 				cout << "Error\n";
-				return -1;
+				exit(EXIT_FAILURE);
 			}
 
 			postfixExprElement1 = postfixExpression.Top();      
@@ -215,11 +191,12 @@ int main(int argc, char* argv[])
 	if (postfixExpression.GetLength() != 1)
 	{
 		cout << "Error\n";
-		return -1;
+		exit(EXIT_FAILURE);
 	}
 
 	cout << postfixExpression.Top() << endl;
-	cout << currentResult << endl;
+	cout.precision(5);	
+	cout << fixed << currentResult << endl;
 	
 	system("pause");
 }
