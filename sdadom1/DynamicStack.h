@@ -8,7 +8,7 @@
 * @author Stanislav Zmiycharov
 * @idnumber 61883
 * @task 1
-* @compiler GCC
+* @compiler VC
 *
 */
 
@@ -18,28 +18,27 @@
 
 template <typename T>
 class DynamicStack {
-	class Container {
-		public:
-			T Value;
-			Container* pNext;
-			Container(T Value, Container* pNext = NULL);
-	};
-
 public:
 	DynamicStack();
 	~DynamicStack();
 	DynamicStack(DynamicStack const & obj);
 	DynamicStack& operator=(DynamicStack const & obj);
 
-	T& Top();
 	void Push(const T & Element);
 	void Pop();
+	T& Top();
+	bool isEmpty();
 	int GetLength();
 
 private:
 	void RemoveAll();
 	void CopyFrom(DynamicStack const & obj);
 
+	struct Container{
+		T Value;
+		Container* pNext;
+		Container(T Value, Container* pNext = NULL);
+	};
 	Container* pTop;
 	size_t Used;
 };
@@ -84,14 +83,6 @@ DynamicStack<T>& DynamicStack<T>::operator=(DynamicStack<T> const & obj)
 	return *this;
 }
 
-template<typename T>
-T& DynamicStack<T>::Top()
-{
-	assert(Used > 0);
-
-	return pTop->Value;
-}
-
 template <typename T>
 void DynamicStack<T>::Push(const T & Element)
 {
@@ -110,6 +101,27 @@ void DynamicStack<T>::Pop()
 	delete pOldTop;
 
 	--Used;
+}
+
+template<typename T>
+T& DynamicStack<T>::Top()
+{
+	assert(Used > 0);
+
+	return pTop->Value;
+}
+
+template <typename T>
+bool DynamicStack<T>::isEmpty()
+{
+	if (Used == 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 template <typename T>
@@ -156,10 +168,10 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 		}
 		Used = obj.Used;
 	}
-	catch (const std::bad_alloc&)
+	catch (const bad_alloc& err)
 	{
 		RemoveAll();	
-		fprintf(stderr, "Exception thrown on failure allocating memory\n");
+		cerr << "Exception caught: " << err.what() << '\n';
 		exit(EXIT_FAILURE);
 	}
 }
