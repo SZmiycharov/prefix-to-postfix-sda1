@@ -170,7 +170,7 @@ void DynamicStack<T>::CopyFrom(DynamicStack const& obj)
 	}
 	catch (const bad_alloc& err)
 	{
-		RemoveAll();	
+		RemoveAll();
 		cerr << "Exception caught: " << err.what() << '\n';
 		exit(EXIT_FAILURE);
 	}
